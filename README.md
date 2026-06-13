@@ -1,68 +1,319 @@
-# Projet d’UML Dilemme Itéré des Prisonniers
-(IUT, département informatique, 1re année)
+<div align="center">
 
-L’objectif du projet consiste à proposer un modèle UML d’une petite application permettant de mettre en œuvre des tournois de stratégies jouant au Dilemme Itéré des Prisonniers, puis de proposer une implémentation en Java de cette application.
+# 🎭 Dilemme Itéré des Prisonniers
+### Simulation de stratégies et tournois autour d'un classique de la théorie des jeux
 
-## 1 Le contexte : du dilemme du prisonnier à l’interaction de tribus
-### 1.1 Le dilemme du prisonnier
+[![Java](https://img.shields.io/badge/Java-8+-orange)]()
+[![Swing](https://img.shields.io/badge/Interface-Swing-blue)]()
+[![JUnit](https://img.shields.io/badge/Tests-JUnit-green)]()
+[![Pattern](https://img.shields.io/badge/Architecture-MVC%20%2F%20Facade-purple)]()
 
-Deux suspects porteurs d’armes ont été arrêtés devant une banque et mis dans deux cellules séparées. Les deux prévenus ne peuvent pas communiquer et doivent choisir entre avouer qu’ils s’apprêtaient à commettre un hold up ou ne rien avouer. Les règles que le juge leur impose sont les suivantes:
+Projet universitaire permettant de simuler des **tournois de stratégies du Dilemme Itéré des Prisonniers** et d'étudier l'émergence de comportements coopératifs ou opportunistes au fil des confrontations.
 
-- si l’un avoue et pasl’autre, celui qui avoue sera libéré en remerciement de sa collaboration etl’autre sera
-condamné à cinq ans de prison;
-- si aucun n’avoue, ils ne seront condamnés qu’à deux ans de prison, pour port d’arme illégal;
-- et si les deux avouent, ils iront chacun faire quatre ans de prison.
+</div>
 
-Dans cette situation, il est clair que si les deux s’entendent (pas d’aveu), ils s’en tireront globalement mieux
-(2 x 3 ans de remise de peine) que si l’un des deux dénonce l’autre (1 x 5 ans de remise de peine). Mais alors l’un peut être tenté de s’en tirer encore mieux en dénonçant son complice. Craignant cela, l’autre risque aussi de
-dénoncer son complice pour ne pas être le dindon de la farce. Le dilemme est donc : faut-il accepter de couvrir son complice (donc de coopérer avec lui) ou le trahir ?
-Ce modèle très simple de la théorie des jeux semble appréhender en miniature les tensions entre cupidité individuelle et intérêts de la coopération collective. Pour cette raison, il est devenu un des modèles les plus utilisés en sociologie, biologie et économie.
+---
 
-### 1.2 Le dilemme du prisonnier itéré
+# 📖 À propos
 
-Le dilemme du prisonnier devient plus intéressant et plus réaliste lorsque la durée de l’interaction n’est pas connue. On peut alors envisager de se souvenir du comportement d’un joueur à son égard et développer une stratégie en rapport. Par exemple, si je sais que mon adversaire ne coopère jamais, mon intérêt sera de ne pas coopérer non plus, sous peine d’être systématiquement floué. Par contre si je sais que mon adversaire coopérera
-toujours quoi qu’il arrive, j’aurai intérêt à être vicieux et ne jamais coopérer pour maximiser mon gain.
+Le **Dilemme du Prisonnier** est l'un des problèmes les plus célèbres de la théorie des jeux.
 
-### 1.3 L’interaction de tribus
+Deux joueurs doivent simultanément choisir entre :
 
-Considérons deux tribus d’indigènes partant à la chasse. Ces deux tribus peuvent choisir entre coopérer ou trahir la tribu adverse lors d’une confrontation. Lorsque la situation du dilemme est itérée, le jeu devient très intéressant, car la question ne se pose plus sous la forme :trahir ou coopérer?, mais sous la forme: quelle stratégie faut-il adopter en fonction du comportement passé de l’entité adverse ?.
-Nous supposons que les deux tribus ne peuvent pas passer d’accord. La seule information qu’une tribu connaît sur l’autre est son comportement passé lors des coups précédents. Les décisions des deux tribus lors de la partie sont prises simultanément. Le nombre de parties n’est pas connu à l’avance. Par rapport au simple dilemme des prisonniers nous choisissons de rajouter la possibilité de renoncer à jouer, mais ce refus est définitif.
-Décrivons la variante adoptée de manière plus abstraite : deux entités peuvent choisir entre coopérer (notation c), trahir (notation t) ou renoncer (notation n). Si l’une trahit et l’autre coopère (partie [t, c]), celle qui trahit obtient un gain de T unités et celle qui coopère (et s’est donc fait duper) obtient un gain de D unités. Lorsque
-les deux entités coopèrent(partie [c, c]), elles gagnent chacune C unités en récompense de leur association. Quand elles trahissent toutes les deux (partie [t, t]), elles gagnent P unités pour s’être laissé piéger mutuellement. Si une
-partie n’a pas lieu parce que l’une a refusé de jouer les deux entités gagnent N unités. Le choix des coefficients **T, D, C, P et N** n’est pas fortuit. Conformément aux n˚181 de POUR LA SCIENCE nous prenons : ***T = 5, D = 0, C = 3, P = 1, N =2***.
+- 🤝 **Coopérer**
+- 🗡️ **Trahir**
 
-## 2 Description du projet
-### 2.1 L’application à réaliser
+Chaque décision influence le gain des deux participants.
 
-L’application à réaliser doit permettre de mettre en œuvre des tournois de stratégies jouant au dilemme itéré des prisonniers tel que décrit dans la section 1.3. Les stratégies sont implémentées en Java. Il faudra implémenter les stratégies décrites section 2.2 plus vos stratégies personnelles ou celles de vos collègues. Un tournoi est la confrontation d’un ensemble de stratégies. L’ensemble de stratégies est un sous-ensemble, choisi par l’utilisateur, des stratégies disponibles. Une rencontre entre deux stratégies se joue en n tours, n étant également défini par l’utilisateur. Dans un tournoi, une stratégie doit rencontrer toutes les stratégies, elle-même comprise,
-de l’ensemble sélectionné. Le score réalisé par une stratégie est la somme de ses points récoltés lors de chacune des confrontations.
+Lorsque cette interaction est répétée un grand nombre de fois, le problème devient particulièrement intéressant : les joueurs peuvent adapter leur comportement en fonction des actions passées de leurs adversaires.
 
-#### Exemple
-L’utilisateur demande un tournoi entre les stratégies *Gentille* et *Méchante* (cf. section 2.2) avec des confrontations en 20 tours.
-L’application réalise le tournoi puis affiche le résultat sous la forme suivante :
+Ce projet propose une implémentation complète permettant :
 
-| Gentille | Méchante | TOTAL
----------+----------+----------+-------
-Gentille | 60 | 0 | 60
----------+----------+----------+-------
-Méchante | 100 | 20 | 120
----------+----------+----------+-------
-Stratégie gagnante du tournoi : Méchante
+- de modéliser différentes stratégies
+- d'organiser des confrontations entre elles 
+- d'exécuter des tournois complets
+- d'analyser les résultats obtenus 
+- de comparer les performances des comportements coopératifs et agressifs
 
-### 2.2 Exemples de stratégie
+---
 
-- ***Gentille :*** Je coopère toujours.
-- ***Méchante :*** Je trahis toujours.
-- ***Donnant-Donnant :*** Je coopère à la première partie, puis je joue ce qu’a joué l’autre à la partie précédente.
-- ***Donnant-Donnant-Dur :*** Je coopère à la première partie, puis je coopère sauf si mon adversaire a trahi lors de l’une des deux parties précédentes.
-- ***Méfiante :*** Je trahis à la première partie, puis je joue ce qu’a joué l’autre à la partie précédente.
-- ***Rancunière :*** Je coopère à la première partie, mais dès que mon adversaire trahit, je trahis toujours.
-- ***Périodique-Méchante :*** Je joue trahir, trahir, coopérer, trahir, trahir, coopérer, ...
-- Périodique-Gentille :*** Je joue coopérer, coopérer, trahir, coopérer, coopérer, trahir, etc
-- ***Majorité-Mou :*** Je joue ce que l’adversaire a joué en majorité, en cas d’égalité et à la première partie, je
-coopère.
-- ***Majorité-Dur :*** Je joue ce que l’adversaire a joué en majorité, en cas d’égalité et à la première partie, je trahis.
-- ***Dur :*** Je trahis tant que mon adversaire coopère. Dès qu’il trahit, je renonce.
-- ***Sondeur-4-coups :*** Aux quatre premiers coups, je joue coopérer, coopérer, trahir, trahir. Ensuite, si mon adversaire a trahi trois fois ou quatre fois, je renonce, sinon je coopère tout le reste du temps.
-- ***Donnant-Donnant-Avec-Seuil :*** je joue la stratégie Donnant-Donnant, mais, tous les cinq coups, je compte mon score et, si j’ai obtenu moins de deux points en moyenne par coup, je renonce.
-- ***Graine-de-champion :*** Je coopère au premier coup. Tous les 20 coups, j’évalue mon score. Si, en moyenne, il est inférieur à 1, 5, je renonce. En règle générale, je coopère. A chaque fois que l’autre trahit, si je ne suis pas déjà dans une phase de punition, je rentre dans une phase de punition. Si mon adversaire m’a trahi n fois (en dehors des phases de punition), la phase de punition dure n. (n+1) trahisons, et est suivie de deux coopérations.
+# ✨ Fonctionnalités
+
+## 🎮 Simulation du Dilemme Itéré
+
+- Gestion automatique des confrontations
+- Nombre de tours paramétrable
+- Historique des actions
+- Calcul des scores
+- Classement final des participants
+
+## 🧠 Bibliothèque de stratégies
+
+Le projet intègre plusieurs stratégies classiques :
+
+| Stratégie | Description |
+|------------|-------------|
+| 😇 Gentille | Coopère toujours |
+| 😈 Méchante | Trahit toujours |
+| 🤨 Méfiante | Commence par trahir |
+| 🔄 Donnant-Donnant | Reproduit le dernier coup adverse |
+| 💢 Rancunière | Coopère jusqu'à la première trahison |
+| 🎲 Pourcentage Gentille | Coopère avec une certaine probabilité |
+| 🎲 Pourcentage Méchante | Trahit avec une certaine probabilité |
+| 🛡️ Donnant-Donnant Dur | Variante plus punitive du Tit-for-Tat |
+
+Le système a été conçu pour permettre l'ajout de nouvelles stratégies facilement.
+
+---
+
+## 🏆 Gestion de tournois
+
+- Toutes les stratégies peuvent s'affronter
+- Génération automatique des confrontations
+- Classement général
+- Statistiques de performance
+- Résumés textuels et HTML
+
+---
+
+## 🖥️ Interface graphique
+
+Application Java Swing permettant :
+
+- la configuration d'un tournoi
+- la sélection des stratégies
+- le paramétrage du nombre de tours
+- la consultation des résultats
+- la visualisation des confrontations
+
+---
+
+# 🏗️ Architecture
+
+Le projet suit une séparation claire entre :
+
+```text
+src/
+└── fr/uga/miage/pc/dilemme
+    ├── back/
+    │   ├── ApiDilemme
+    │   ├── Tournoi
+    │   ├── Confrontation
+    │   └── strategie/
+    │
+    ├── front/
+    │   ├── JDilemme
+    │   ├── JParamTournoi
+    │   └── composants UI
+    │
+    ├── System/
+    │   ├── Logs
+    │   ├── Helpers
+    │   └── Utilitaires
+    │
+    └── Main.java
+```
+
+---
+
+# 🎯 Principes de conception
+
+## Facade
+
+La classe :
+
+```java
+ApiDilemme
+```
+
+sert de point d'entrée unique entre l'interface graphique et le moteur métier.
+
+Cela permet :
+
+- d'isoler la logique métier ;
+- de simplifier les appels ;
+- de réduire le couplage entre les couches.
+
+---
+
+## MVC
+
+L'application suit globalement une architecture inspirée du modèle :
+
+```text
+Model
+ ├─ Tournoi
+ ├─ Confrontation
+ └─ Stratégies
+
+View
+ ├─ JDilemme
+ └─ JParamTournoi
+
+Controller
+ └─ API + événements Swing
+```
+
+---
+
+## Observer
+
+Le projet contient également des interfaces :
+
+```java
+IObservable
+IObserver
+```
+
+permettant la mise à jour automatique de certaines vues.
+
+---
+
+# ⚙️ Fonctionnement d'un tournoi
+
+```text
+Création des stratégies
+          │
+          ▼
+Création du tournoi
+          │
+          ▼
+Génération des confrontations
+          │
+          ▼
+Simulation des tours
+          │
+          ▼
+Calcul des scores
+          │
+          ▼
+Classement final
+```
+
+---
+
+# 🧪 Tests
+
+Le projet dispose d'une suite de tests unitaires couvrant :
+
+- les stratégies ;
+- les confrontations ;
+- les tournois ;
+- les utilitaires ;
+- l'API métier.
+
+Arborescence :
+
+```text
+test/
+├── back/
+├── back/strategie/
+└── front/
+```
+
+---
+
+# 🚀 Lancer l'application
+
+## Prérequis
+
+- Java 8 ou supérieur
+- Eclipse (recommandé)
+
+---
+
+## Depuis Eclipse
+
+1. Importer le projet.
+2. Vérifier le JDK configuré.
+3. Exécuter :
+
+```java
+fr.uga.miage.pc.dilemme.Main
+```
+
+---
+
+## Depuis la ligne de commande
+
+Compilation :
+
+```bash
+javac src/fr/uga/miage/pc/dilemme/Main.java
+```
+
+Exécution :
+
+```bash
+java fr.uga.miage.pc.dilemme.Main
+```
+
+---
+
+# 📚 Exemple de scénario
+
+Imaginons un tournoi entre :
+
+- Gentille
+- Méchante
+- Donnant-Donnant
+- Rancunière
+
+Sur 100 tours :
+
+```text
+Gentille      🤝🤝🤝🤝🤝
+Méchante      🗡️🗡️🗡️🗡️🗡️
+DonnantDonnant 🤝🤝🗡️🗡️🤝
+Rancunière     🤝🤝🤝🗡️🗡️
+```
+
+Le tournoi permet alors d'observer :
+
+- quelles stratégies dominent
+- lesquelles favorisent la coopération
+- lesquelles exploitent les autres joueurs
+- l'impact du comportement initial
+
+---
+
+# 🎓 Objectifs pédagogiques
+
+Ce projet a été réalisé dans le cadre d'un enseignement autour :
+
+- de la théorie des jeux
+- de l'UML
+- de la programmation orientée objet
+- des patrons de conception
+- des interfaces graphiques Java
+- des tests unitaires
+
+---
+
+# 🔮 Améliorations possibles
+
+- Export CSV des résultats
+- Graphiques statistiques
+- Génération de rapports PDF
+- Nouvelles stratégies évolutives
+- IA adaptative
+- Tournois multi-générations
+- Interface graphique modernisée (JavaFX)
+
+---
+
+# 👥 Auteurs
+
+**Aurélien Avanzino**  
+**Stéphanie Gourdon**
+
+Projet universitaire réalisé dans le cadre de l'étude du **Dilemme Itéré des Prisonniers**.
+
+---
+
+<div align="center">
+
+### 🤝 Coopérer ou trahir ?
+### À vous de découvrir quelle stratégie survivra au tournoi.
+
+</div>
